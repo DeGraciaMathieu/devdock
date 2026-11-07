@@ -9,6 +9,14 @@ struct ProjectListView: View {
         return store.projects.filter { $0.relativePath.localizedCaseInsensitiveContains(query) }
     }
 
+    private var favoriteProjects: [Project] {
+        filteredProjects.filter { store.isFavorite($0) }
+    }
+
+    private var otherProjects: [Project] {
+        filteredProjects.filter { !store.isFavorite($0) }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -26,9 +34,14 @@ struct ProjectListView: View {
 
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 2) {
-                    ForEach(filteredProjects) { project in
-                        ProjectRowView(project: project)
+                    if !favoriteProjects.isEmpty {
+                        sectionTitle("Favoris")
+                        rows(for: favoriteProjects)
+
+                        sectionTitle("Tous les projets")
                     }
+
+                    rows(for: otherProjects)
                 }
             }
             .frame(height: 380)
@@ -38,13 +51,37 @@ struct ProjectListView: View {
                 .foregroundStyle(.secondary)
         }
     }
+
+    private func rows(for projects: [Project]) -> some View {
+        ForEach(projects) { project in
+            ProjectRowView(project: project, isFavorite: store.isFavorite(project)) {
+                store.toggleFavorite(project)
+            }
+        }
+    }
+
+    private func sectionTitle(_ title: String) -> some View {
+        Text(title)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .padding(.top, 4)
+    }
 }
 
 private struct ProjectRowView: View {
     let project: Project
+    let isFavorite: Bool
+    let onToggleFavorite: () -> Void
 
     var body: some View {
         HStack {
+            Button(action: onToggleFavorite) {
+                Image(systemName: isFavorite ? "star.fill" : "star")
+                    .foregroundStyle(isFavorite ? .yellow : .secondary)
+            }
+            .buttonStyle(.borderless)
+            .help(isFavorite ? "Retirer des favoris" : "Ajouter aux favoris")
+
             VStack(alignment: .leading, spacing: 1) {
                 Text(project.name)
                     .fontWeight(.medium)
