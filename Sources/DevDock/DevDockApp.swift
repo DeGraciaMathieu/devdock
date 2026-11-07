@@ -8,6 +8,7 @@ struct DevDockApp: App {
     // Created with the app, not lazily on first panel opening, so copies are recorded from launch.
     private let clipboardStore = ClipboardStore()
     @StateObject private var snippetStore = SnippetStore()
+    @StateObject private var diskStore = DiskUsageStore()
 
     var body: some Scene {
         MenuBarExtra("DevDock", systemImage: "shippingbox") {
@@ -16,7 +17,8 @@ struct DevDockApp: App {
                 gitStore: gitStore,
                 serverStore: serverStore,
                 clipboardStore: clipboardStore,
-                snippetStore: snippetStore
+                snippetStore: snippetStore,
+                diskStore: diskStore
             )
         }
         .menuBarExtraStyle(.window)
