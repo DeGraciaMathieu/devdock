@@ -7,6 +7,8 @@ struct ContentView: View {
     @ObservedObject var clipboardStore: ClipboardStore
     @ObservedObject var snippetStore: SnippetStore
     @State private var tab = Tab.projects
+    /// Shared by the Projects and Git tabs, so switching tab keeps the search.
+    @State private var projectQuery = ""
 
     private enum Tab {
         case projects
@@ -28,9 +30,9 @@ struct ContentView: View {
 
             switch tab {
             case .projects:
-                ProjectListView(store: projectStore)
+                ProjectListView(store: projectStore, query: $projectQuery)
             case .git:
-                GitStatusListView(projectStore: projectStore, gitStore: gitStore)
+                GitStatusListView(projectStore: projectStore, gitStore: gitStore, query: $projectQuery)
             case .servers:
                 DevServerListView(projectStore: projectStore, serverStore: serverStore)
             case .clipboard:

@@ -4,11 +4,13 @@ struct GitStatusListView: View {
     @ObservedObject var projectStore: ProjectStore
     @ObservedObject var gitStore: GitStatusStore
     @State private var showsAllProjects = false
+    @Binding var query: String
 
     private var rows: [(project: Project, status: GitStatus)] {
         projectStore.projects.compactMap { project in
             guard let status = gitStore.statuses[project.id],
-                  showsAllProjects || status.needsAttention else { return nil }
+                  showsAllProjects || status.needsAttention,
+                  query.isEmpty || project.relativePath.localizedCaseInsensitiveContains(query) else { return nil }
 
             return (project, status)
         }
@@ -17,9 +19,8 @@ struct GitStatusListView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Toggle("Afficher tous les projets", isOn: $showsAllProjects)
-
-                Spacer()
+                TextField("Rechercher un projet", text: $query)
+                    .textFieldStyle(.roundedBorder)
 
                 Button {
                     gitStore.refresh(projectStore.projects)
@@ -29,6 +30,8 @@ struct GitStatusListView: View {
                 .disabled(gitStore.isReading || projectStore.isScanning)
                 .help("Relire l'état git")
             }
+
+            Toggle("Afficher tous les projets", isOn: $showsAllProjects)
 
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 2) {

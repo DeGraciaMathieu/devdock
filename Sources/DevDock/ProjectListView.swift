@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ProjectListView: View {
     @ObservedObject var store: ProjectStore
-    @State private var query = ""
+    @Binding var query: String
 
     private var filteredProjects: [Project] {
         guard !query.isEmpty else { return store.projects }
