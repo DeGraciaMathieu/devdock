@@ -2,6 +2,8 @@
 
 A tiny macOS menu bar app for the developer's daily routine, built around the git projects found in `~/Sites`.
 
+![devdock tabs: projects, git, servers and clipboard](docs/overview.png)
+
 - **Projects**: search your repositories and open one in Cursor, iTerm or Finder.
 - **Git**: see which projects have uncommitted changes or unpushed commits, with their branch and how far behind they are.
 - **Servers**: list the processes listening on a TCP port, linked to the project they run from, with their CPU usage in cores. Open `localhost:port` or stop the process in one click.
